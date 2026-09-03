@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dice Duel</title>
+<style>
+  :root {
+    --bg: #0e1116; --panel: #161b23; --panel2: #1d2330; --line: #2a3140;
+    --text: #e6edf3; --dim: #8b98a9; --accent: #f0b429; --win: #3fb950; --lose: #f85149;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; justify-content: center; padding: 24px 16px 48px;
+  }
+  .wrap { width: 100%; max-width: 720px; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: -.01em; }
+  .sub { color: var(--dim); font-size: 13px; margin-top: 2px; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+  .bal { text-align: right; }
+  .bal .amt { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bal .lbl { color: var(--dim); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  label { display: block; font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  input {
+    width: 100%; padding: 10px 12px; background: var(--panel2); color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px; font: inherit;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  button {
+    padding: 11px 18px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--panel2); color: var(--text); font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.primary { background: var(--accent); color: #1a1200; border-color: var(--accent); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .row > .grow { flex: 1; min-width: 140px; }
+  .stakes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stakes button.on { background: var(--accent); color: #1a1200; border-color: var(--accent); }
+
+  .board { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+  .seat { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 16px; text-align: center; }
+  .seat.active { border-color: var(--accent); }
+  .seat.won { border-color: var(--win); }
+  .seat.lost { border-color: var(--lose); opacity: .65; }
+  .seat .who { font-weight: 600; margin-bottom: 2px; }
+  .seat .tag { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+  .dice { display: flex; gap: 8px; justify-content: center; margin: 14px 0 8px; }
+  .die {
+    width: 48px; height: 48px; border-radius: 10px; background: #f5f7fa;
+    display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 6px; gap: 2px;
+  }
+  .die.six { background: var(--accent); box-shadow: 0 0 0 2px rgba(240,180,41,.35); }
+  .die.hidden { background: var(--panel); border: 1px dashed var(--line); }
+  .pip { width: 8px; height: 8px; border-radius: 50%; background: #12161c; align-self: center; justify-self: center; }
+  .score { font-size: 12px; color: var(--dim); }
+  .vs { color: var(--dim); font-weight: 700; font-size: 13px; }
+
+  .status { text-align: center; padding: 14px 0 4px; min-height: 28px; font-weight: 600; }
+  .status.win { color: var(--win); } .status.lose { color: var(--lose); } .status.tie { color: var(--accent); }
+  .center { text-align: center; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--dim); word-break: break-all; }
+  .ok { color: var(--win); } .bad { color: var(--lose); }
+  details summary { cursor: pointer; color: var(--dim); font-size: 13px; }
+  .banner { background: #2a2010; border: 1px solid #5c4410; color: #f0d090; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 16px; }
+  .hide { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner">Play chips only &mdash; no real money, no payment rail. Prototype.</div>
+
+  <header>
+    <div>
+      <h1>Dice Duel</h1>
+      <div class="sub">Two dice each. Most sixes wins the pot. Equal sixes &rarr; roll again.</div>
+    </div>
+    <div class="bal hide" id="balBox">
+      <div class="amt" id="bal">$0.00</div>
+      <div class="lbl" id="balName">balance</div>
+    </div>
+  </header>
+
+  <!-- join -->
+  <div class="card" id="joinCard">
+    <div class="row">
+      <div class="grow">
+        <label for="name">Display name</label>
+        <input id="name" placeholder="e.g. Bryan" maxlength="24">
+      </div>
+      <button class="primary" id="joinBtn">Sit down</button>
+    </div>
+  </div>
+
+  <!-- lobby -->
+  <div class="card hide" id="lobbyCard">
+    <label>Stake (each player posts this)</label>
+    <div class="stakes" id="stakes"></div>
+    <label for="seed">Your client seed &mdash; mix into the dice so the house can't pick outcomes</label>
+    <div class="row">
+      <div class="grow"><input id="seed" placeholder="anything you like"></div>
+      <button class="primary" id="playBtn">Find opponent</button>
+    </div>
+    <div class="status" id="lobbyStatus"></div>
+  </div>
+
+  <!-- table -->
+  <div class="card hide" id="tableCard">
+    <div class="board">
+      <div class="seat" id="seatYou">
+        <div class="who" id="youName">You</div>
+        <div class="tag" id="youTag">&nbsp;</div>
+        <div class="dice" id="youDice"></div>
+        <div class="score" id="youScore">&nbsp;</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="seat" id="seatThem">
+        <div class="who" id="themName">Opponent</div>
+        <div class="tag" id="themTag">&nbsp;</div>
+        <div class="dice" id="themDice"></div>
+        <div class="score" id="themScore">&nbsp;</div>
+      </div>
+    </div>
+    <div class="status" id="tableStatus"></div>
+    <div class="center">
+      <button class="primary" id="rollBtn" disabled>Roll</button>
+      <button id="againBtn" class="hide">Play again</button>
+    </div>
+    <div class="sub center" id="potLine" style="margin-top:12px"></div>
+  </div>
+
+  <!-- history + proof -->
+  <div class="card hide" id="histCard">
+    <details open>
+      <summary>Rounds this match</summary>
+      <table id="histTable"><thead><tr><th>#</th><th>You</th><th>Them</th><th>Result</th></tr></thead><tbody></tbody></table>
+    </details>
+  </div>
+
+  <div class="card hide" id="proofCard">
+    <details>
+      <summary>Fairness proof</summary>
+      <div id="proofBody" style="margin-top:12px"></div>
+    </details>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const STAKES = [100, 500, 1000, 2500, 5000];   // cents
+const money = (c) => '$' + (c / 100).toFixed(2);
+
+let me = null;      // { playerId, name }
+let stake = 500;
+let lastView = null;
+
+// --- dice rendering -------------------------------------------------------
+// Pip layout per face, on a 3x3 grid (cells 1..9).
+const PIPS = {
+  1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9],
+};
+function dieEl(value) {
+  const d = document.createElement('div');
+  d.className = 'die' + (value === 6 ? ' six' : '');
+  const cells = PIPS[value] || [];
+  for (let i = 1; i <= 9; i++) {
+    const c = document.createElement('div');
+    if (cells.includes(i)) c.className = 'pip';
+    d.appendChild(c);
+  }
+  return d;
+}
+function renderDice(el, dice) {
+  el.innerHTML = '';
+  if (!dice) {
+    for (let i = 0; i < 2; i++) {
+      const d = document.createElement('div');
+      d.className = 'die hidden';
+      el.appendChild(d);
+    }
+    return;
+  }
+  dice.forEach((v) => el.appendChild(dieEl(v)));
+}
+const sixes = (dice) => (dice || []).filter((d) => d === 6).length;
+function scoreText(dice) {
+  if (!dice) return ' ';
+  const n = sixes(dice);
+  return n === 0 ? 'no sixes' : n === 1 ? 'one six' : 'DOUBLE SIX';
+}
+
+// --- api ------------------------------------------------------------------
+async function api(path, body) {
+  const r = await fetch('/api' + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body || {}),
+  });
+  return r.json();
+}
+
+// --- stake buttons --------------------------------------------------------
+STAKES.forEach((s) => {
+  const b = document.createElement('button');
+  b.textContent = money(s);
+  b.onclick = () => {
+    stake = s;
+    [...$('stakes').children].forEach((x) => x.classList.remove('on'));
+    b.classList.add('on');
+  };
+  if (s === stake) b.classList.add('on');
+  $('stakes').appendChild(b);
+});
+
+// --- join -----------------------------------------------------------------
+$('joinBtn').onclick = async () => {
+  const name = $('name').value.trim() || 'anon';
+  const res = await api('/join', { name });
+  if (res.error) return alert(res.error);
+  me = res;
+  $('joinCard').classList.add('hide');
+  $('lobbyCard').classList.remove('hide');
+  $('balBox').classList.remove('hide');
+  $('bal').textContent = money(res.balance);
+  $('balName').textContent = res.name;
+  $('seed').value = Math.random().toString(36).slice(2, 10);
+  connect();
+};
+
+$('playBtn').onclick = async () => {
+  const res = await api('/queue', { playerId: me.playerId, stake, clientSeed: $('seed').value.trim() });
+  if (res.error) { $('lobbyStatus').textContent = res.error; return; }
+  $('playBtn').disabled = true;
+  $('lobbyStatus').textContent = 'Waiting for an opponent at ' + money(stake) + '…';
+};
+
+$('rollBtn').onclick = async () => {
+  $('rollBtn').disabled = true;
+  const res = await api('/roll', { playerId: me.playerId });
+  if (res.error) { $('tableStatus').textContent = res.error; $('rollBtn').disabled = false; }
+};
+
+$('againBtn').onclick = () => {
+  $('tableCard').classList.add('hide');
+  $('histCard').classList.add('hide');
+  $('proofCard').classList.add('hide');
+  $('lobbyCard').classList.remove('hide');
+  $('playBtn').disabled = false;
+  $('lobbyStatus').textContent = '';
+};
+
+// --- live events ----------------------------------------------------------
+function connect() {
+  const es = new EventSource('/api/events?playerId=' + me.playerId);
+
+  es.addEventListener('hello', (e) => {
+    const d = JSON.parse(e.data);
+    $('bal').textContent = money(d.balance);
+  });
+
+  es.addEventListener('queued', (e) => {
+    const d = JSON.parse(e.data);
+    $('lobbyStatus').textContent = 'In queue at ' + money(d.stake) + ' — position ' + d.position;
+  });
+
+  es.addEventListener('matched', (e) => {
+    const v = JSON.parse(e.data);
+    $('lobbyCard').classList.add('hide');
+    $('tableCard').classList.remove('hide');
+    $('histCard').classList.remove('hide');
+    $('againBtn').classList.add('hide');
+    $('histTable').querySelector('tbody').innerHTML = '';
+    $('bal').textContent = money(v.balance);
+    $('youName').textContent = v.you.name + ' (you)';
+    $('themName').textContent = v.opponent.name;
+    $('potLine').innerHTML = 'Stake ' + money(v.stake) + ' each &middot; pot ' + money(v.pot.pot)
+      + ' &middot; winner takes ' + money(v.pot.payout) + ' (rake ' + money(v.pot.rake) + ')';
+    showProof(v, null);
+    paint(v);
+  });
+
+  ['round', 'turn', 'rolled'].forEach((type) => es.addEventListener(type, (e) => paint(JSON.parse(e.data))));
+
+  es.addEventListener('tie', (e) => {
+    const v = JSON.parse(e.data);
+    paint(v);
+    addHistory(v);
+    setStatus('Both rolled ' + (v.scores.scoreA === 0 ? 'no sixes' : v.scores.scoreA === 1 ? 'one six' : 'double six')
+      + ' — tie. Rolling again…', 'tie');
+  });
+
+  es.addEventListener('finished', (e) => {
+    const v = JSON.parse(e.data);
+    paint(v);
+    addHistory(v);
+    $('bal').textContent = money(v.balance);
+    const won = v.youWon;
+    setStatus(won ? 'You win ' + money(v.payout) + '  (+' + money(v.delta) + ')'
+                  : 'You lose ' + money(v.stake), won ? 'win' : 'lose');
+    $('seatYou').classList.add(won ? 'won' : 'lost');
+    $('seatThem').classList.add(won ? 'lost' : 'won');
+    $('rollBtn').disabled = true;
+    $('againBtn').classList.remove('hide');
+    showProof(v, v);
+  });
+
+  es.addEventListener('void', (e) => {
+    const v = JSON.parse(e.data);
+    $('bal').textContent = money(v.balance);
+    setStatus('Match voided (' + v.reason + ') — stakes refunded.', 'tie');
+    $('againBtn').classList.remove('hide');
+  });
+}
+
+// --- rendering ------------------------------------------------------------
+function paint(v) {
+  lastView = v;
+  renderDice($('youDice'), v.you.dice);
+  renderDice($('themDice'), v.opponent.dice);
+  $('youScore').textContent = scoreText(v.you.dice);
+  $('themScore').textContent = scoreText(v.opponent.dice);
+  $('seatYou').classList.remove('won', 'lost');
+  $('seatThem').classList.remove('won', 'lost');
+  $('seatYou').classList.toggle('active', v.turn === v.you.side && v.status === 'playing');
+  $('seatThem').classList.toggle('active', v.turn === v.opponent.side && v.status === 'playing');
+  $('youTag').textContent = 'seat ' + v.you.side.toUpperCase();
+  $('themTag').textContent = 'seat ' + v.opponent.side.toUpperCase();
+
+  if (v.status === 'playing') {
+    $('rollBtn').disabled = !v.yourTurn;
+    if (v.yourTurn) setStatus('Round ' + v.round + ' — your roll', '');
+    else setStatus('Round ' + v.round + ' — waiting for ' + v.opponent.name + '…', '');
+  }
+}
+
+function setStatus(text, cls) {
+  const el = $('tableStatus');
+  el.textContent = text;
+  el.className = 'status ' + (cls || '');
+}
+
+function addHistory(v) {
+  const last = v.history[v.history.length - 1];
+  if (!last) return;
+  const mine = v.you.side === 'a' ? last.diceA : last.diceB;
+  const theirs = v.you.side === 'a' ? last.diceB : last.diceA;
+  const myScore = v.you.side === 'a' ? last.scoreA : last.scoreB;
+  const theirScore = v.you.side === 'a' ? last.scoreB : last.scoreA;
+  const outcome = last.result === 'TIE' ? 'tie — replay'
+    : (last.result === v.you.side.toUpperCase() ? 'you win' : 'they win');
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td>' + last.round + '</td>'
+    + '<td>' + mine.join(' · ') + ' <span class="score">(' + myScore + ')</span></td>'
+    + '<td>' + theirs.join(' · ') + ' <span class="score">(' + theirScore + ')</span></td>'
+    + '<td>' + outcome + '</td>';
+  $('histTable').querySelector('tbody').appendChild(tr);
+}
+
+function showProof(v, finished) {
+  $('proofCard').classList.remove('hide');
+  let html = '<div class="score">Server seed commitment (published before any dice were rolled):</div>'
+    + '<div class="mono">' + v.serverSeedHash + '</div>'
+    + '<div class="score" style="margin-top:10px">Your client seed:</div>'
+    + '<div class="mono">' + (v.you.clientSeed || '') + '</div>';
+  if (finished) {
+    html += '<div class="score" style="margin-top:10px">Revealed server seed:</div>'
+      + '<div class="mono">' + finished.proof.serverSeed + '</div>'
+      + '<div style="margin-top:12px" class="' + (finished.verification.ok ? 'ok' : 'bad') + '">'
+      + (finished.verification.ok ? '✓ ' : '✗ ') + finished.verification.reason + '</div>'
+      + '<div class="score" style="margin-top:8px">sha256(revealed seed) equals the commitment above, so the'
+      + ' outcome was fixed before anyone rolled.</div>';
+  } else {
+    html += '<div class="score" style="margin-top:10px">The seed is revealed when the match ends.</div>';
+  }
+  $('proofBody').innerHTML = html;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Dice Duel — visual system
+
+   Reference points are the physical objects, not other websites: a felt table
+   under a low lamp, brass chip edges, ivory dice, the printed rulebook.
+
+   Rules that keep it from drifting into generic-dark-SaaS:
+     - ONE accent (brass). Win/loss are the only other saturated colours, so a
+       result never competes with a button for attention.
+     - Type does the hierarchy work: a high-contrast serif for display against a
+       neutral sans for UI. No decorative gradients on text except money.
+     - Surfaces are lit, not filled — a top highlight and a long shadow, the way
+       a table looks under a hanging light. No uniform grey cards.
+     - Grain over everything. Flat digital blacks are the giveaway.
+   ========================================================================== */
+
+@theme {
+  /* Felt — desaturated green-black, warmer as it rises toward the light */
+  --color-felt-950: #060d0a;
+  --color-felt-900: #0a1410;
+  --color-felt-850: #0e1a15;
+  --color-felt-800: #13221b;
+  --color-felt-750: #182b22;
+  --color-felt-700: #1f362b;
+  --color-felt-600: #2b4838;
+
+  /* Brass — a struck-metal accent, deliberately muted at the top end */
+  --color-brass-200: #f6e3ad;
+  --color-brass-300: #eed189;
+  --color-brass-400: #dfb85c;
+  --color-brass-500: #c9a227;
+  --color-brass-600: #a2801b;
+  --color-brass-700: #6d5512;
+
+  /* Ivory — dice and type. Warm, never pure white. */
+  --color-ivory: #ede8dc;
+  --color-ivory-dim: #b9b3a4;
+
+  --color-jade: #4fb477;
+  --color-oxblood: #c2453d;
+
+  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --animate-drift: drift 24s ease-in-out infinite;
+  --animate-breathe: breathe 4s ease-in-out infinite;
+  --animate-rise: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -10px, 0); }
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+html { color-scheme: dark; }
+
+body {
+  background: var(--color-felt-950);
+  color: var(--color-ivory);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The lamp: a warm pool of light above the table, and a vignette pulling the
+   corners down. This is what stops the page reading as a flat dark rectangle. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 55% at 50% -8%, rgb(201 162 39 / 0.10) 0%, transparent 60%),
+    radial-gradient(120% 90% at 50% 0%, #14231c 0%, transparent 55%),
+    radial-gradient(100% 100% at 50% 120%, #0a1712 0%, transparent 60%);
+}
+
+/* Film grain. Cheap, static, and the single biggest thing separating a dark UI
+   that feels designed from one that feels defaulted. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------- surfaces */
+
+/* A lit surface: hairline highlight along the top edge, shadow beneath. */
+@utility surface {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-felt-800) 92%, transparent),
+    color-mix(in oklab, var(--color-felt-900) 96%, transparent)
+  );
+  border: 1px solid color-mix(in oklab, var(--color-felt-700) 90%, transparent);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.045),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 12px 32px -12px rgb(0 0 0 / 0.7);
+}
+
+@utility surface-raised {
+  background: linear-gradient(180deg, var(--color-felt-750), var(--color-felt-850));
+  border: 1px solid var(--color-felt-600);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.06),
+    0 8px 24px -10px rgb(0 0 0 / 0.8);
+}
+
+/* ---------------------------------------------------------------- type */
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.98;
+}
+
+/* Micro-label: the small letterspaced caps that carry structure without
+   needing headings everywhere. */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-ivory) 42%, transparent);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Money. Struck brass, lit from above. */
+@utility money {
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, var(--color-brass-200) 0%, var(--color-brass-500) 62%, var(--color-brass-700) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------- controls */
+
+@utility btn-brass {
+  position: relative;
+  background: linear-gradient(180deg, var(--color-brass-300), var(--color-brass-500) 55%, var(--color-brass-600));
+  color: #1a1405;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.45),
+    inset 0 -1px 0 0 rgb(0 0 0 / 0.25),
+    0 6px 18px -8px rgb(201 162 39 / 0.6);
+  transition: filter 0.15s ease, transform 0.08s ease;
+}
+@utility btn-brass-hover {
+  filter: brightness(1.07);
+}
+
+@utility btn-ghost {
+  background: color-mix(in oklab, var(--color-felt-800) 70%, transparent);
+  border: 1px solid var(--color-felt-700);
+  border-radius: 10px;
+  color: color-mix(in oklab, var(--color-ivory) 78%, transparent);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+@utility hairline {
+  border-color: color-mix(in oklab, var(--color-ivory) 9%, transparent);
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--color-brass-500);
+  color: var(--color-felt-950);
+}
+
+/* Focus that is visible without being a browser default blue ring. */
+:focus-visible {
+  outline: 2px solid var(--color-brass-400);
+  outline-offset: 2px;
+}
+
+/* Scrollbars, so panels don't sprout light-grey Windows bars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-felt-600) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--color-felt-600);
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
