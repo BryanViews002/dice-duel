@@ -27,18 +27,41 @@ import { terminalStatus, koboToNaira } from '../web/src/lib/money.ts';
 
 // ---------------------------------------------------------------- config
 
-const need = (k) => {
-  const v = process.env[k];
-  if (!v) {
-    console.error(`[fatal] ${k} is not set`);
-    process.exit(1);
-  }
-  return v;
+// NEXT_PUBLIC_SUPABASE_URL is the name the web app uses; SUPABASE_URL is the
+// more natural name here. Accept either so the same value can be pasted from
+// either place without thinking about it.
+const first = (...names) => {
+  for (const n of names) if (process.env[n]) return process.env[n];
+  return undefined;
 };
 
-const SUPABASE_URL = need('NEXT_PUBLIC_SUPABASE_URL').replace(/\/$/, '');
-const SERVICE_KEY = need('SUPABASE_SERVICE_ROLE_KEY');
-const FLW_KEY = need('FLW_SECRET_KEY');
+const CONFIG = {
+  SUPABASE_URL: first('SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'),
+  SERVICE_KEY: first('SUPABASE_SERVICE_ROLE_KEY'),
+  FLW_KEY: first('FLW_SECRET_KEY'),
+};
+
+// Report EVERY missing variable at once. Failing on the first one means a
+// crash-loop where you fix them one deploy at a time.
+const missing = Object.entries(CONFIG).filter(([, v]) => !v).map(([k]) => k);
+if (missing.length) {
+  console.error('');
+  console.error('[fatal] the payout worker is missing required configuration:');
+  for (const k of missing) {
+    const hint = k === 'SUPABASE_URL' ? '  (set SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL)' : '';
+    console.error(`          - ${k}${hint}`);
+  }
+  console.error('');
+  console.error('        Set these as service variables on your host. See worker/DEPLOY.md.');
+  console.error('        Present now: ' +
+    (Object.keys(process.env).filter((k) => /^(SUPABASE|NEXT_PUBLIC_SUPABASE|FLW|WORKER)/.test(k)).join(', ') || '(none)'));
+  console.error('');
+  process.exit(1);
+}
+
+const SUPABASE_URL = CONFIG.SUPABASE_URL.replace(/\/$/, '');
+const SERVICE_KEY = CONFIG.SERVICE_KEY;
+const FLW_KEY = CONFIG.FLW_KEY;
 const FLW_BASE = process.env.FLW_BASE_URL || 'https://api.flutterwave.com/v3';
 const CALLBACK = process.env.FLW_TRANSFER_CALLBACK_URL;
 
