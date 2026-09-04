@@ -59,10 +59,10 @@ export function AdminPayouts() {
   }, [supabase, load]);
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="display text-[42px]">Payouts</h1>
+          <h1 className="display text-[30px] sm:text-[42px]">Payouts</h1>
           <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-ivory-dim/70">
             Send each transfer from your bank, then record it here. The player&apos;s
             funds were already reserved when they requested it — marking a payout
@@ -182,7 +182,7 @@ function PayoutCard({
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div>
           <div className="eyebrow mb-1.5">Send exactly</div>
-          <div className="money text-[34px] font-semibold leading-none">{money(payout.net_kobo)}</div>
+          <div className="money text-[26px] sm:text-[34px] font-semibold leading-none">{money(payout.net_kobo)}</div>
           <div className="mt-2 text-[12px] text-ivory-dim/50">
             {money(payout.amount_kobo)} requested less {money(payout.fee_kobo)} fee
           </div>

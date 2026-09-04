@@ -23,7 +23,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
     <>
       <TableBackground intensity={0.75} />
 
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* masthead */}
         <div className="flex items-center justify-between border-b border-felt-800/70 py-6">
           <span className="display text-lg">Dice Duel</span>
@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
           </Link>
         </div>
 
-        <div className="grid gap-16 py-16 lg:grid-cols-[1.1fr_400px] lg:gap-20 lg:py-24">
+        <div className="grid gap-12 py-10 sm:gap-16 sm:py-16 lg:grid-cols-[1.1fr_400px] lg:gap-20 lg:py-24">
           {/* ------------------------------------------------ pitch */}
           <div>
             <p className="eyebrow mb-7 flex items-center gap-2.5">
@@ -60,7 +60,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
               {RULES.map((r) => (
                 <div
                   key={r.verdict}
-                  className="flex flex-wrap items-center gap-x-6 gap-y-4 bg-felt-900/50 px-5 py-5 sm:flex-nowrap"
+                  className="flex flex-wrap items-center gap-x-4 gap-y-3 bg-felt-900/50 px-4 py-4 sm:flex-nowrap sm:gap-x-6 sm:px-5 sm:py-5"
                 >
                   <div className="flex items-end gap-2.5">
                     {r.a.map((v, i) => <Die3D key={i} value={v} size="sm" delay={i * 90} />)}

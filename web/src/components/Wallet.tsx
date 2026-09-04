@@ -92,8 +92,8 @@ export function Wallet(props: Props) {
   }, []);
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
-      <h1 className="display text-[42px]">Wallet</h1>
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+      <h1 className="display text-[30px] sm:text-[42px]">Wallet</h1>
 
       {checkingPayment && (
         <p className="mt-4 rounded-lg border border-brass-500/30 bg-brass-500/[0.07] px-4 py-3 text-[13px] text-brass-200/90">
@@ -105,17 +105,17 @@ export function Wallet(props: Props) {
       <div className="surface mt-7 grid gap-6 p-6 sm:grid-cols-3">
         <div>
           <div className="eyebrow mb-2">Balance</div>
-          <div className="money text-[30px] font-semibold leading-none">{money(props.balanceKobo)}</div>
+          <div className="money text-[24px] sm:text-[30px] font-semibold leading-none">{money(props.balanceKobo)}</div>
         </div>
         <div>
           <div className="eyebrow mb-2">Withdrawable now</div>
-          <div className="tabular text-[30px] font-semibold leading-none">
+          <div className="tabular text-[24px] sm:text-[30px] font-semibold leading-none">
             {money(props.withdrawableKobo)}
           </div>
         </div>
         <div>
           <div className="eyebrow mb-2">Left to stake</div>
-          <div className="tabular text-[30px] font-semibold leading-none text-ivory-dim/70">
+          <div className="tabular text-[24px] sm:text-[30px] font-semibold leading-none text-ivory-dim/70">
             {money(props.wageringRequiredKobo)}
           </div>
         </div>

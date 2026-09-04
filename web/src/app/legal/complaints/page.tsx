@@ -21,9 +21,15 @@ export default function ComplaintsPage() {
         <li>what happened, and what you would like us to do.</li>
       </ul>
       <p>
-        <strong>
-          Replace this line with your real support email address before launch.
-        </strong>
+        Email{' '}
+        <a
+          href="mailto:bryanjoe0012@gmail.com"
+          className="text-brass-300 underline-offset-4 hover:underline"
+        >
+          bryanjoe0012@gmail.com
+        </a>
+        . Please put the match id or payout reference in the subject line so we can
+        find it quickly.
       </p>
 
       <h2>What happens next</h2>

@@ -89,16 +89,16 @@ export function Dashboard({ me, stats }: { me: Me; stats: Stats | null }) {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       {/* ---------------------------------------------------- greeting */}
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="eyebrow mb-2">Welcome back</p>
-          <h1 className="display text-[46px] leading-none">{me.username}</h1>
+          <h1 className="display text-[32px] sm:text-[46px] leading-none">{me.username}</h1>
         </div>
         <div className="text-right">
           <div className="eyebrow mb-1.5">Balance</div>
-          <div className="money text-[38px] font-semibold leading-none">{money(balance)}</div>
+          <div className="money text-[28px] sm:text-[38px] font-semibold leading-none">{money(balance)}</div>
           {me.wagering_required_kobo > 0 && (
             <div className="mt-1.5 text-[11.5px] text-brass-300/80">
               {money(me.wagering_required_kobo)} left to stake

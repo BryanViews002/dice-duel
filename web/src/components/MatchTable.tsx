@@ -87,13 +87,13 @@ export function MatchTable({
   return (
     <div className="space-y-4">
       {/* ---------------------------------------------------- pot ledger */}
-      <div className="surface flex flex-wrap items-center gap-x-10 gap-y-4 px-6 py-4">
+      <div className="surface flex flex-wrap items-center gap-x-6 gap-y-4 px-4 py-4 sm:gap-x-10 sm:px-6">
         <div>
           <div className="eyebrow mb-1.5">Pot</div>
-          <div className="money text-[30px] font-semibold leading-none">{money(pot.pot)}</div>
+          <div className="money text-[24px] sm:text-[30px] font-semibold leading-none">{money(pot.pot)}</div>
         </div>
         <div className="hidden h-9 w-px bg-felt-700 sm:block" />
-        <dl className="flex gap-8 text-[12.5px]">
+        <dl className="flex gap-5 text-[12.5px] sm:gap-8">
           <div>
             <dt className="eyebrow mb-1.5 text-[10px]">Stake each</dt>
             <dd className="tabular text-ivory-dim">{money(match.stake_kobo)}</dd>
@@ -109,7 +109,7 @@ export function MatchTable({
         </dl>
         <div className="ml-auto text-right">
           <div className="eyebrow mb-1.5">Round</div>
-          <div className="tabular text-[30px] font-semibold leading-none">{match.round}</div>
+          <div className="tabular text-[24px] sm:text-[30px] font-semibold leading-none">{match.round}</div>
         </div>
       </div>
 
@@ -152,7 +152,7 @@ export function MatchTable({
         </div>
 
         {/* ------------------------------------------------ action */}
-        <div className="relative border-t border-felt-800 px-6 py-6 text-center">
+        <div className="relative border-t border-felt-800 px-4 py-6 text-center sm:px-6">
           {/*
             Keyed motion.p, deliberately NOT wrapped in AnimatePresence.
 
@@ -240,7 +240,8 @@ export function MatchTable({
           <div className="border-b border-felt-800 px-6 py-3">
             <span className="eyebrow">Rounds</span>
           </div>
-          <table className="w-full text-[13.5px]">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[420px] text-[13.5px]">
             <thead>
               <tr className="border-b border-felt-850">
                 <th className="eyebrow px-6 py-2.5 text-left text-[10px] font-medium">#</th>
@@ -275,6 +276,7 @@ export function MatchTable({
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

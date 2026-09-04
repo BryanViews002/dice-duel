@@ -217,7 +217,7 @@ export function PlayClient({ me }: { me: Me }) {
     return (
       <>
         <TableBackground />
-        <div className="px-6 py-14">
+        <div className="px-4 py-10 sm:px-6 sm:py-14">
           <Lobby
           balanceKobo={balance}
           queued={queued}
@@ -239,7 +239,7 @@ export function PlayClient({ me }: { me: Me }) {
   return (
     <>
       <TableBackground intensity={0.55} />
-      <div className="mx-auto grid max-w-6xl gap-4 px-6 py-8 lg:grid-cols-[1fr_330px]">
+      <div className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1fr_330px]">
       <MatchTable
         match={match}
         rounds={rounds}
@@ -252,7 +252,7 @@ export function PlayClient({ me }: { me: Me }) {
         busy={busy}
         error={error}
       />
-      <div className="h-[540px] lg:h-auto">
+      <div className="h-[380px] sm:h-[540px] lg:h-auto">
           <Chat matchId={match.id} meId={me.id} meName={me.username} themName={opponent.username} />
         </div>
       </div>

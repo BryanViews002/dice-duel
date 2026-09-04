@@ -11,8 +11,8 @@ export default async function ResponsiblePlayPage() {
   if (!user) redirect('/');
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="display text-[42px]">Responsible play</h1>
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
+      <h1 className="display text-[30px] sm:text-[42px]">Responsible play</h1>
       <p className="mt-2.5 max-w-xl text-[14px] leading-relaxed text-ivory-dim/70">
         Dice Duel is a 50/50 game with a house rake, which means over enough hands
         the maths favours the house, not you. Play with money you can afford to

@@ -47,11 +47,11 @@ export function Lobby({
     return (
       <Centered>
         <p className="eyebrow mb-3">Private table open</p>
-        <h2 className="display mb-6 text-[30px]">Waiting on your challenger</h2>
+        <h2 className="display mb-6 text-[24px] sm:text-[30px]">Waiting on your challenger</h2>
 
         <div className="surface-raised mb-7 px-8 py-7">
           <div className="eyebrow mb-3 text-[10px]">Invite code</div>
-          <div className="font-mono text-[42px] font-medium leading-none tracking-[0.28em] text-brass-300">
+          <div className="font-mono text-[30px] sm:text-[42px] font-medium leading-none tracking-[0.28em] text-brass-300">
             {inviteCode}
           </div>
         </div>
@@ -90,7 +90,7 @@ export function Lobby({
           <SpinningDie delay={280} />
         </div>
         <p className="eyebrow mb-3">Matchmaking</p>
-        <h2 className="display mb-3 text-[30px]">Finding an opponent</h2>
+        <h2 className="display mb-3 text-[24px] sm:text-[30px]">Finding an opponent</h2>
         <p className="mb-8 text-[14px] text-ivory-dim/70">
           Looking for someone staking {money(stake)}. You&apos;ll be seated the moment
           they appear.

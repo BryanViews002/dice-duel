@@ -66,6 +66,7 @@
 html { color-scheme: dark; }
 
 body {
+  overflow-x: hidden;
   background: var(--color-felt-950);
   color: var(--color-ivory);
   font-family: var(--font-sans);

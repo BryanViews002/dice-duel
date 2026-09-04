@@ -8,7 +8,7 @@ export default async function VerifyPage({ searchParams }: PageProps<'/verify'>)
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="display text-[42px]">Verify a match</h1>
+      <h1 className="display text-[30px] sm:text-[42px]">Verify a match</h1>
       <p className="mt-2.5 max-w-2xl text-[14px] leading-relaxed text-ivory-dim/70">
         Every match is sealed before it starts: the server picks a secret seed, publishes
         only its SHA-256 hash, and reveals the seed when the match ends. Both players also

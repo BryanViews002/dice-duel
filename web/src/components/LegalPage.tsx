@@ -8,8 +8,8 @@ export function LegalPage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="display text-[42px]">{title}</h1>
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-10">
+      <h1 className="display text-[30px] sm:text-[42px]">{title}</h1>
       <p className="mt-2 text-[12.5px] text-ivory-dim/45">Last updated {updated}</p>
 
       <div className="mt-4 rounded-lg border border-brass-500/30 bg-brass-500/[0.06] px-4 py-3 text-[12.5px] leading-relaxed text-brass-200/85">
