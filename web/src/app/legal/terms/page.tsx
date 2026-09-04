@@ -22,6 +22,7 @@ export default function TermsPage() {
       <p>
         Both players stake the same amount before any die is thrown. The winner
         receives the pot less the rake, which is shown to you before you commit.
+        Stakes run from ₦1,000 to ₦1,000,000 per player.
       </p>
 
       <h2>3. Fairness</h2>
