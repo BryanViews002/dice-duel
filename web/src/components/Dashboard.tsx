@@ -91,10 +91,10 @@ export function Dashboard({ me, stats }: { me: Me; stats: Stats | null }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       {/* ---------------------------------------------------- greeting */}
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div>
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <div className="min-w-0">
           <p className="eyebrow mb-2">Welcome back</p>
-          <h1 className="display text-[32px] sm:text-[46px] leading-none">{me.username}</h1>
+          <h1 className="display truncate text-[32px] leading-none sm:text-[46px]">{me.username}</h1>
         </div>
         <div className="text-right">
           <div className="eyebrow mb-1.5">Balance</div>
@@ -115,9 +115,9 @@ export function Dashboard({ me, stats }: { me: Me; stats: Stats | null }) {
             className="mt-8 space-y-3"
           >
             {challenges.map((c) => (
-              <div key={c.match_id} className="surface flex flex-wrap items-center gap-4 border-brass-500/40 p-5">
+              <div key={c.match_id} className="surface flex flex-wrap items-center gap-x-4 gap-y-3 border-brass-500/40 p-5">
                 <Avatar seed={c.avatar_seed} name={c.username} size={40} />
-                <div className="min-w-0 flex-1">
+                <div className="min-w-[170px] flex-1">
                   <div className="text-[15px]">
                     <strong>{c.username}</strong> challenged you
                   </div>
@@ -132,7 +132,7 @@ export function Dashboard({ me, stats }: { me: Me; stats: Stats | null }) {
                     return res;
                   })}
                   disabled={busy || balance < c.stake_kobo}
-                  className="btn-brass hover:btn-brass-hover px-6 py-2.5 text-[14px] disabled:opacity-40"
+                  className="btn-brass hover:btn-brass-hover flex-1 px-6 py-2.5 text-[14px] disabled:opacity-40 sm:flex-none"
                 >
                   {balance < c.stake_kobo ? 'Not enough' : 'Accept'}
                 </button>
@@ -150,18 +150,27 @@ export function Dashboard({ me, stats }: { me: Me; stats: Stats | null }) {
       </AnimatePresence>
 
       {/* ---------------------------------------------------- quick play */}
-      <div className="surface mt-8 flex flex-wrap items-center gap-6 p-6">
-        <div className="flex gap-2.5">
+      {/*
+        min-w-0 on the text block let it shrink to almost nothing while the dice
+        and the button held their width, so on a phone the copy collapsed into a
+        one-word-per-line column instead of wrapping onto its own row. A real
+        minimum width makes flex-wrap do its job.
+      */}
+      <div className="surface mt-8 flex flex-wrap items-center gap-x-5 gap-y-4 p-5 sm:gap-x-6 sm:p-6">
+        <div className="flex shrink-0 gap-2.5">
           <Die3D value={6} size="md" />
           <Die3D value={6} size="md" delay={120} />
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-[180px] flex-1">
           <div className="display text-[22px]">Take a seat</div>
-          <div className="mt-1 text-[13.5px] text-ivory-dim/65">
+          <div className="mt-1 text-[13.5px] leading-relaxed text-ivory-dim/65">
             Get matched with whoever is staking the same as you.
           </div>
         </div>
-        <Link href="/play" className="btn-brass hover:btn-brass-hover px-8 py-3 text-[15px]">
+        <Link
+          href="/play"
+          className="btn-brass hover:btn-brass-hover w-full px-8 py-3 text-center text-[15px] sm:w-auto"
+        >
           Find a game
         </Link>
       </div>
@@ -185,7 +194,7 @@ export function Dashboard({ me, stats }: { me: Me; stats: Stats | null }) {
               {requests.map((r) => (
                 <div key={r.id} className="flex items-center gap-3 py-1.5">
                   <Avatar seed={r.avatar_seed} name={r.username} size={28} />
-                  <span className="min-w-0 flex-1 text-[14px]">{r.username}</span>
+                  <span className="min-w-[100px] flex-1 truncate text-[14px]">{r.username}</span>
                   <button
                     onClick={() => run(() => supabase.rpc('respond_to_friend_request', { p_id: r.id, p_accept: true }))}
                     disabled={busy}
@@ -306,7 +315,7 @@ function FriendRow({
 
   return (
     <div className="px-5 py-3">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="relative">
           <Avatar seed={friend.avatar_seed} name={friend.username} size={34} />
           <span
@@ -317,8 +326,8 @@ function FriendRow({
           />
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="text-[14.5px]">{friend.username}</div>
+        <div className="min-w-[120px] flex-1">
+          <div className="truncate text-[14.5px]">{friend.username}</div>
           <div className="text-[11.5px] text-ivory-dim/45">
             {friend.in_match
               ? 'in a match'

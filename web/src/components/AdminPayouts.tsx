@@ -124,8 +124,8 @@ export function AdminPayouts() {
           <div className="eyebrow mb-3">Recently settled</div>
           <div className="surface divide-y divide-felt-850/70 overflow-hidden">
             {recent.map((r) => (
-              <div key={r.reference} className="flex flex-wrap items-center gap-4 px-5 py-3">
-                <span className="min-w-0 flex-1 text-[14px]">{r.username}</span>
+              <div key={r.reference} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5">
+                <span className="min-w-[110px] flex-1 truncate text-[14px]">{r.username}</span>
                 <span className="tabular text-[13px] text-ivory-dim/70">{money(r.net_kobo)}</span>
                 {r.manual_reference && (
                   <span className="font-mono text-[11px] text-ivory-dim/40">

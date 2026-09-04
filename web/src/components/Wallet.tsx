@@ -511,8 +511,8 @@ function History({ withdrawals, deposits }: { withdrawals: Withdrawal[]; deposit
       </div>
       <div className="divide-y divide-felt-850/70">
         {rows.map((r) => (
-          <div key={r.key} className="flex flex-wrap items-center gap-4 px-6 py-3.5">
-            <div className="min-w-0 flex-1">
+          <div key={r.key} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3.5 sm:px-6">
+            <div className="min-w-[130px] flex-1">
               <div className="text-[14px]">{r.label}</div>
               <div className="text-[12px] text-ivory-dim/45">{timeAgo(r.when)}</div>
             </div>
