@@ -61,19 +61,27 @@ journalctl -u dice-duel-worker -f      # watch it; the egress IP is in the first
 
 ## Option B — Railway (easier, but check the IP)
 
-`railway.json` in the repo root already points Railway at `worker/Dockerfile`
-with the repo root as build context, which it needs in order to include the
-shared `web/src/lib/money.ts`.
+The `Dockerfile` lives at the **repo root**, not in `worker/`. Railway only
+auto-detects a Dockerfile at the service root — a custom `dockerfilePath` in
+`railway.json` is not reliably honoured, and the build silently falls through to
+language auto-detection, which fails with:
+
+    Railpack could not determine how to build the app
+
+The root location also gives the build the context it needs, since the worker
+imports `web/src/lib/money.ts`.
 
 1. Railway → **New Project → Deploy from GitHub repo** → pick `dice-duel`.
-2. It will read `railway.json` and build the Dockerfile. Leave Root Directory
-   **empty** — the build context must be the repo root.
-3. **Variables** → add the four from `.env.example`.
+2. Leave Root Directory **empty**. The build context must be the repo root.
+3. **Variables** → add the four below.
 4. Deploy, then open **Logs** and find:
    `[worker] egress IP x.x.x.x — whitelist THIS with Flutterwave`
 5. **Redeploy once and check the IP again.** On Railway, stable outbound IPs are
    a paid workspace feature — if the address changes between deploys you need
-   to enable static egress on your plan, or use Option A instead.
+   static egress on your plan, or Option A instead.
+
+If you would rather keep the Dockerfile inside `worker/`, the supported
+alternative is a service variable `RAILWAY_DOCKERFILE_PATH=worker/Dockerfile`.
 
 ---
 
