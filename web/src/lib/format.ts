@@ -65,16 +65,16 @@ export function avatarColors(seed: string): [string, string] {
 }
 
 /**
- * Table stakes, in kobo: ₦500 · ₦1,000 · ₦2,000 · ₦10,000 · ₦100,000 · ₦1,000,000
+ * Table stakes, in kobo: ₦2,000 · ₦5,000 · ₦10,000 · ₦50,000 · ₦200,000 · ₦1,000,000
  *
- * The ladder starts below the ₦2,000 minimum deposit on purpose — a player who
- * deposits the minimum should get several matches out of it, not one all-or-
- * nothing roll. The top matches the ₦1,000,000 deposit ceiling.
+ * Each player posts the stake, so the smallest pot is ₦4,000. The floor matches
+ * the ₦2,000 minimum deposit — the smallest deposit buys exactly one match at
+ * the smallest table — and the ceiling matches the ₦1,000,000 deposit limit.
  *
- * These are also enforced in the database (platform_settings.min_stake_kobo /
+ * These are also bounded in the database (platform_settings.min_stake_kobo /
  * max_stake_kobo). The buttons are a convenience; the bounds are the rule.
  */
-export const STAKES = [50_000, 100_000, 200_000, 1_000_000, 10_000_000, 100_000_000] as const;
+export const STAKES = [200_000, 500_000, 1_000_000, 5_000_000, 20_000_000, 100_000_000] as const;
 
 /** Quick-pick deposit amounts, in kobo. Lowest equals the ₦2,000 minimum. */
 export const DEPOSIT_PRESETS = [200_000, 500_000, 1_000_000, 5_000_000, 20_000_000] as const;
