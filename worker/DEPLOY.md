@@ -85,6 +85,76 @@ alternative is a service variable `RAILWAY_DOCKERFILE_PATH=worker/Dockerfile`.
 
 ---
 
+## Option C — AWS EC2 + Elastic IP
+
+The right AWS shape for this. An Elastic IP attached to an instance is a fixed
+address that survives stop/start, reboots and redeploys.
+
+**Do not use Fargate or Lambda for this.** Their egress is only static via a NAT
+Gateway, which is ~$32/month before traffic — for a worker making a few HTTP
+requests a minute. EC2 with an Elastic IP attached directly needs no NAT.
+
+Cost: `t4g.nano` ~$3/mo + the IPv4 address charge (~$3.60/mo since AWS began
+billing public IPv4). Call it ~$7/month.
+
+### 1. Launch
+
+- **AMI:** Amazon Linux 2023 (or Ubuntu 24.04)
+- **Type:** `t4g.nano` (ARM) — the worker is almost entirely idle
+- **Key pair:** create one so you can SSH
+- **Security group — inbound:** SSH (22) **from your IP only**.
+  Nothing else. The worker accepts no inbound traffic whatsoever; it only makes
+  outbound calls to Supabase and Flutterwave. Leave outbound as the default
+  allow-all.
+
+### 2. Pin the address
+
+EC2 → **Elastic IPs** → *Allocate* → select it → *Actions → Associate* → your
+instance. **Do this before whitelisting anything.** The auto-assigned public IP
+changes on stop/start; only the Elastic IP is stable.
+
+> Keep it attached. AWS bills for an Elastic IP that is allocated but not
+> associated with a running instance.
+
+### 3. Install
+
+```bash
+ssh -i your-key.pem ec2-user@YOUR_ELASTIC_IP
+
+sudo dnf install -y nodejs22 git    # Amazon Linux 2023
+# Node 24 is preferable (native TypeScript stripping). If the distro package is
+# older than 22.6, install from nodesource:
+#   curl -fsSL https://rpm.nodesource.com/setup_24.x | sudo bash - && sudo dnf install -y nodejs
+
+sudo git clone https://github.com/BryanViews002/dice-duel.git /opt/dice-duel
+cd /opt/dice-duel/worker
+sudo cp .env.example .env
+sudo nano .env                      # fill in the four variables
+
+# one pass, to confirm it works and print the egress IP
+set -a && . ./.env && set +a && WORKER_ONCE=1 node index.mjs
+```
+
+The printed egress IP should equal your Elastic IP. If it does not, the instance
+is routing through a NAT — check it is in a public subnet with the EIP attached.
+
+### 4. Keep it running
+
+Use the systemd unit from Option A (adjust `User=` to `ec2-user` if `nobody`
+cannot read the checkout), then:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now dice-duel-worker
+journalctl -u dice-duel-worker -f
+```
+
+### 5. Whitelist
+
+Flutterwave → **Settings → IP Whitelisting** → your Elastic IP.
+
+---
+
 ## Environment
 
 ```
