@@ -99,8 +99,8 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
           <div className="lg:pt-4">
             <AuthPanel next={next} />
             <p className="mt-5 px-1 text-center text-xs leading-relaxed text-ivory-dim/50">
-              New accounts open with $100 in play chips. This is a demonstration
-              table — chips carry no cash value and cannot be bought or cashed out.
+              Real-money play. Fund your balance to take a seat, and withdraw your
+              winnings to your bank. 18+ only — please play responsibly.
             </p>
           </div>
         </div>

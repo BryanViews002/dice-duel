@@ -71,7 +71,7 @@ export function AuthPanel({ next }: { next: string }) {
       <h2 className="display mb-1 text-[26px]">Take a seat</h2>
       <p className="mb-6 text-[13px] text-ivory-dim/70">
         {mode === 'signup'
-          ? 'Opens with $100 in play chips.'
+          ? 'Free to join. Fund your balance when you are ready to play.'
           : mode === 'signin'
             ? 'Welcome back to the table.'
             : "We'll email you a link — no password needed."}
