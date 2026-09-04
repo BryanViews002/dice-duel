@@ -31,7 +31,10 @@ export function Lobby({
   onCancelTable: () => void;
   onJoinCode: (code: string, seed: string) => void;
 }) {
-  const [stake, setStake] = useState<number>(50_000);   // ₦500
+  // Derived from STAKES rather than hard-coded: a literal here silently drifts
+  // out of range whenever the ladder changes, leaving no button selected and the
+  // button quoting a stake that is not on offer.
+  const [stake, setStake] = useState<number>(STAKES[0]);
   const [seed, setSeed] = useState(() => Math.random().toString(36).slice(2, 10));
   const [code, setCode] = useState('');
   const [tab, setTab] = useState<'quick' | 'private'>('quick');
