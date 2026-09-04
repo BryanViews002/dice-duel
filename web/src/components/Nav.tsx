@@ -8,6 +8,7 @@ import { money } from '@/lib/format';
 import { Avatar } from './Avatar';
 
 const LINKS = [
+  { href: '/dashboard', label: 'Home' },
   { href: '/play', label: 'Table' },
   { href: '/leaderboard', label: 'Standings' },
   { href: '/history', label: 'History' },

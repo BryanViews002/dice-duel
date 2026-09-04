@@ -15,9 +15,9 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const params = await searchParams;
-  const next = typeof params.next === 'string' ? params.next : '/play';
+  const next = typeof params.next === 'string' ? params.next : '/dashboard';
 
-  if (user) redirect('/play');
+  if (user) redirect('/dashboard');
 
   return (
     <>

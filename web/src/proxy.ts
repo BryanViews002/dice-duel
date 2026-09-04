@@ -32,7 +32,7 @@ export async function proxy(request: NextRequest) {
   // getSession(), which trusts whatever is in the cookie.
   const { data: { user } } = await supabase.auth.getUser();
 
-  const needsAuth = ['/play', '/history'].some((p) => request.nextUrl.pathname.startsWith(p));
+  const needsAuth = ['/dashboard', '/play', '/history', '/wallet', '/admin'].some((p) => request.nextUrl.pathname.startsWith(p));
   if (!user && needsAuth) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
