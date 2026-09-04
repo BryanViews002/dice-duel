@@ -306,6 +306,7 @@ function WithdrawPanel({
           {accounts.map((a) => (
             <option key={a.id} value={a.id}>
               {a.account_name} · {a.bank_name} · ····{a.account_number.slice(-4)}
+              {a.is_verified ? '' : '  (name not bank-confirmed)'}
             </option>
           ))}
         </select>
@@ -377,6 +378,7 @@ function AddAccount({
   const [banks, setBanks] = useState<{ code: string; name: string }[]>([]);
   const [bankCode, setBankCode] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
+  const [accountName, setAccountName] = useState('');
   const [open, setOpen] = useState(!compact);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -400,8 +402,9 @@ function AddAccount({
     <div className="surface p-6">
       <div className="eyebrow mb-1">Payout account</div>
       <p className="mb-5 text-[13px] leading-relaxed text-ivory-dim/65">
-        We check the account with your bank and show you the registered name before
-        anything is sent. A transfer to a wrong-but-valid number cannot be recovered.
+        We try to confirm the name with your bank. If we can&apos;t, we&apos;ll use the
+        name you enter and check it by hand before sending — so make sure it matches
+        the account exactly. A transfer to the wrong account cannot be recovered.
       </p>
 
       <select
@@ -418,7 +421,14 @@ function AddAccount({
         onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
         placeholder="10-digit account number"
         inputMode="numeric"
-        className="tabular mb-4 w-full rounded-lg border border-felt-700 bg-felt-950/60 px-3.5 py-2.5 text-[15px] outline-none transition-colors placeholder:text-ivory-dim/25 focus:border-brass-500/70"
+        className="tabular mb-3 w-full rounded-lg border border-felt-700 bg-felt-950/60 px-3.5 py-2.5 text-[15px] outline-none transition-colors placeholder:text-ivory-dim/25 focus:border-brass-500/70"
+      />
+
+      <input
+        value={accountName}
+        onChange={(e) => setAccountName(e.target.value)}
+        placeholder="Account holder's name, exactly as the bank has it"
+        className="mb-4 w-full rounded-lg border border-felt-700 bg-felt-950/60 px-3.5 py-2.5 text-[14px] outline-none transition-colors placeholder:text-ivory-dim/25 focus:border-brass-500/70"
       />
 
       <button
@@ -426,14 +436,21 @@ function AddAccount({
           setLocalError(null);
           const bank = banks.find((b) => b.code === bankCode);
           const res = await post('/api/wallet/banks', {
-            bankCode, bankName: bank?.name ?? '', accountNumber,
+            bankCode, bankName: bank?.name ?? '', accountNumber, accountName,
           });
-          if (res) { setAccountNumber(''); onDone(); }
+          if (res) {
+            setLocalError(
+              res.verified
+                ? null
+                : `Saved as "${res.accountName}". We couldn't confirm this with the bank, so it will be checked by hand before your first payout.`,
+            );
+            setAccountNumber(''); setAccountName(''); onDone();
+          }
         }}
-        disabled={busy || !bankCode || accountNumber.length !== 10}
+        disabled={busy || !bankCode || accountNumber.length !== 10 || !accountName.trim()}
         className="btn-brass hover:btn-brass-hover w-full py-3 text-[14px] disabled:opacity-40"
       >
-        {busy ? 'Checking with the bank…' : 'Verify and save'}
+        {busy ? 'Checking with the bank…' : 'Save payout account'}
       </button>
 
       {(error || localError) && (

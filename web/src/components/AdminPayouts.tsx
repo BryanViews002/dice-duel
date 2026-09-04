@@ -16,6 +16,7 @@ type Pending = {
   bank_name: string;
   bank_code: string;
   account_number: string;
+  is_verified: boolean;
   requested_at: string;
 };
 
@@ -189,7 +190,14 @@ function PayoutCard({
 
         <div className="text-right">
           <div className="eyebrow mb-1.5">To</div>
-          <div className="text-[15px] font-medium">{payout.account_name}</div>
+          <div className="text-[15px] font-medium">
+            {payout.account_name}
+            {!payout.is_verified && (
+              <span className="ml-2 rounded border border-brass-500/50 px-1.5 py-0.5 text-[10px] font-normal tracking-wide text-brass-300">
+                UNCONFIRMED
+              </span>
+            )}
+          </div>
           <div className="mt-1 text-[13px] text-ivory-dim/70">{payout.bank_name}</div>
           <button
             onClick={() => copy('account', payout.account_number)}
@@ -203,6 +211,14 @@ function PayoutCard({
           </button>
         </div>
       </div>
+
+      {!payout.is_verified && (
+        <p className="mt-4 rounded-lg border border-brass-500/30 bg-brass-500/[0.07] px-4 py-2.5 text-[12.5px] leading-relaxed text-brass-200/90">
+          This account name was typed by the player, not confirmed by the bank.
+          Check the name your banking app shows before you confirm the transfer —
+          a transfer to the wrong account cannot be recovered.
+        </p>
+      )}
 
       <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-felt-800 pt-4 text-[12px] text-ivory-dim/50">
         <span>{payout.username}</span>

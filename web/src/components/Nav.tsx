@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { money } from '@/lib/format';
@@ -29,6 +30,26 @@ export function Nav({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+
+  // The nav is rendered on the server, so without this the balance only moved
+  // on navigation. Subscribing here means a stake, a win, a deposit or a payout
+  // updates the number in place on every page.
+  const [balance, setBalance] = useState(balanceKobo);
+  useEffect(() => setBalance(balanceKobo), [balanceKobo]);
+
+  useEffect(() => {
+    if (balanceKobo === null) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel('nav-balance')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, (payload) => {
+        const next = payload.new as { balance_kobo?: number };
+        // RLS means only our own row ever reaches us here.
+        if (typeof next.balance_kobo === 'number') setBalance(next.balance_kobo);
+      })
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
+  }, [balanceKobo]);
 
   async function signOut() {
     await createClient().auth.signOut();
@@ -69,9 +90,9 @@ export function Nav({
         </nav>
 
         <div className="ml-auto flex items-center gap-4">
-          {balanceKobo !== null && (
+          {balance !== null && (
             <div className="text-right leading-none">
-              <div className="money text-[19px] font-semibold">{money(balanceKobo)}</div>
+              <div className="money text-[19px] font-semibold">{money(balance)}</div>
               <div className="eyebrow mt-1 text-[9.5px]">balance</div>
             </div>
           )}

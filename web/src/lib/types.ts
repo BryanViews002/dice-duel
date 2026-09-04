@@ -94,7 +94,9 @@ export type BankAccount = {
   account_number: string;
   /** Resolved with the bank via Flutterwave — never typed by the user. */
   account_name: string;
-  verified_at: string;
+  /** True only when the bank confirmed the name via the provider. */
+  is_verified: boolean;
+  verified_at: string | null;
   created_at: string;
 };
 
