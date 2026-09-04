@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
   const { data: profile } = user
     ? await supabase
         .from('profiles')
-        .select('username, avatar_seed, balance_kobo')
+        .select('username, avatar_seed, balance_kobo, is_admin')
         .eq('id', user.id)
         .maybeSingle()
     : { data: null };
@@ -47,6 +47,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
             username={profile?.username ?? null}
             avatarSeed={profile?.avatar_seed ?? null}
             balanceKobo={profile?.balance_kobo ?? null}
+            isAdmin={profile?.is_admin ?? false}
           />
         )}
         <main className="flex-1">{children}</main>

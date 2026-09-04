@@ -19,10 +19,12 @@ export function Nav({
   username,
   avatarSeed,
   balanceKobo,
+  isAdmin = false,
 }: {
   username: string | null;
   avatarSeed: string | null;
   balanceKobo: number | null;
+  isAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -42,7 +44,7 @@ export function Nav({
         </Link>
 
         <nav className="flex items-center gap-0.5 text-[13.5px]">
-          {LINKS.map((l) => {
+          {[...LINKS, ...(isAdmin ? [{ href: '/admin/payouts', label: 'Payouts' } as const] : [])].map((l) => {
             const active = pathname.startsWith(l.href);
             return (
               <Link
