@@ -63,7 +63,12 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-html { color-scheme: dark; }
+html {
+  color-scheme: dark;
+  /* Belt and braces with body below: some browsers only honour the clip on one
+     of the two. A phone should never scroll sideways. */
+  overflow-x: hidden;
+}
 
 body {
   overflow-x: hidden;
