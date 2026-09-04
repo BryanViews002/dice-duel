@@ -38,6 +38,28 @@ export function Wallet(props: Props) {
   const live = props.withdrawals.find((w) =>
     ['requested', 'review', 'processing'].includes(w.status));
 
+  // Deposit recovery. A dropped webhook used to mean a player paid and was
+  // never credited, with nothing to notice. Asking on page load closes that:
+  // the person most likely to spot an uncredited payment is the one who made
+  // it, and they are already here. Safe to call repeatedly — crediting is
+  // idempotent — and it costs nothing when there is nothing pending.
+  const [checkingPayment, setCheckingPayment] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const returningFromCheckout = new URLSearchParams(window.location.search).has('ref');
+      if (returningFromCheckout) setCheckingPayment(true);
+      try {
+        const res = await fetch('/api/wallet/deposits/sync', { method: 'POST' });
+        const json = await res.json().catch(() => null);
+        if (alive && json?.credited > 0) router.refresh();
+      } finally {
+        if (alive) setCheckingPayment(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [router]);
+
   // A live payout changes state from the webhook or the reconciler, not from
   // anything this page does — so listen rather than poll.
   useEffect(() => {
@@ -72,6 +94,12 @@ export function Wallet(props: Props) {
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
       <h1 className="display text-[42px]">Wallet</h1>
+
+      {checkingPayment && (
+        <p className="mt-4 rounded-lg border border-brass-500/30 bg-brass-500/[0.07] px-4 py-3 text-[13px] text-brass-200/90">
+          Confirming your payment with the bank… this usually takes a few seconds.
+        </p>
+      )}
 
       {/* ---------------------------------------------------------- balances */}
       <div className="surface mt-7 grid gap-6 p-6 sm:grid-cols-3">
