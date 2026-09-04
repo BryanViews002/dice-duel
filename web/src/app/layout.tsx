@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Inter, Instrument_Serif, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { Nav } from '@/components/Nav';
@@ -52,9 +53,36 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
         )}
         <main className="flex-1">{children}</main>
         <footer className="mt-16 border-t border-felt-800/70 px-6 py-8">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 text-xs text-ivory-dim/60">
-            <span>Dice Duel — provably fair, two dice a side.</span>
-            <span>Licensed real-money gaming · 18+ · Please play responsibly.</span>
+          <div className="mx-auto max-w-6xl space-y-4">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
+              <Link href="/responsible" className="text-brass-300/90 transition-colors hover:text-brass-200">
+                Responsible play
+              </Link>
+              <Link href="/legal/terms" className="text-ivory-dim/60 transition-colors hover:text-ivory">
+                Terms
+              </Link>
+              <Link href="/legal/privacy" className="text-ivory-dim/60 transition-colors hover:text-ivory">
+                Privacy
+              </Link>
+              <Link href="/legal/complaints" className="text-ivory-dim/60 transition-colors hover:text-ivory">
+                Complaints
+              </Link>
+              <Link href="/verify" className="text-ivory-dim/60 transition-colors hover:text-ivory">
+                Verify a match
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-ivory-dim/45">
+              <span>
+                <span className="mr-2 rounded border border-ivory-dim/30 px-1.5 py-0.5 font-semibold">18+</span>
+                Licensed real-money gaming. Play with money you can afford to lose.
+              </span>
+              <span>
+                Support:{' '}
+                <a href="tel:+2348062106493" className="underline-offset-4 hover:underline">
+                  0806 210 6493
+                </a>
+              </span>
+            </div>
           </div>
         </footer>
       </body>

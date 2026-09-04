@@ -14,6 +14,7 @@ const LINKS = [
   { href: '/leaderboard', label: 'Standings' },
   { href: '/history', label: 'History' },
   { href: '/wallet', label: 'Wallet' },
+  { href: '/responsible', label: 'Limits' },
   { href: '/verify', label: 'Verify' },
 ] as const;
 
