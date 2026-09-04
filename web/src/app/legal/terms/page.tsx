@@ -43,7 +43,7 @@ export default function TermsPage() {
 
       <h2>5. Deposits and withdrawals</h2>
       <ul>
-        <li>Deposits: ₦2,000 minimum, ₦1,000,000 maximum per transaction.</li>
+        <li>Deposits: ₦1,000 minimum, ₦1,000,000 maximum per transaction.</li>
         <li>
           Withdrawals: ₦2,000 minimum, ₦1,000,000 maximum per transaction, and
           ₦1,000,000 in any rolling 24 hours.

@@ -77,5 +77,5 @@ export function avatarColors(seed: string): [string, string] {
  */
 export const STAKES = [100_000, 200_000, 500_000, 2_000_000, 10_000_000, 100_000_000] as const;
 
-/** Quick-pick deposit amounts, in kobo. Lowest equals the ₦2,000 minimum. */
-export const DEPOSIT_PRESETS = [200_000, 500_000, 1_000_000, 5_000_000, 20_000_000] as const;
+/** Quick-pick deposit amounts, in kobo. Lowest equals the ₦1,000 minimum. */
+export const DEPOSIT_PRESETS = [100_000, 200_000, 500_000, 2_000_000, 10_000_000] as const;
