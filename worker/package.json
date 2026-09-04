@@ -1,0 +1,12 @@
+{
+  "name": "dice-duel-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Payout worker. Runs on a fixed-IP host; the only component that calls Flutterwave transfers.",
+  "engines": { "node": ">=22.6" },
+  "scripts": {
+    "start": "node index.mjs",
+    "once": "cross-env WORKER_ONCE=1 node index.mjs"
+  }
+}

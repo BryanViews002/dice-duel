@@ -26,6 +26,34 @@ export { koboToNaira, nairaToKobo, terminalStatus };
 
 const BASE = process.env.FLW_BASE_URL || 'https://api.flutterwave.com/v3';
 
+/**
+ * Optional static-IP egress proxy.
+ *
+ * Flutterwave gates the Transfers API behind IP whitelisting, and Vercel's
+ * serverless functions egress from a large, changing pool of addresses — there
+ * is nothing stable to whitelist. Without a fixed egress IP every payout comes
+ * back as:
+ *
+ *     400  "Please enable IP Whitelisting to access this service"
+ *
+ * Set FLW_PROXY_URL to a proxy with a static IP (QuotaGuard, Fixie, or your own
+ * small VPS running tinyproxy/squid) and whitelist THAT address with
+ * Flutterwave. Reads and account lookups do not need it, but routing everything
+ * through one egress keeps the whitelist to a single entry.
+ *
+ * Unset in local development, where your own IP is the one you whitelist.
+ */
+let proxyDispatcher: unknown;
+async function dispatcher(): Promise<unknown> {
+  const url = process.env.FLW_PROXY_URL;
+  if (!url) return undefined;
+  if (!proxyDispatcher) {
+    const { ProxyAgent } = await import('undici');
+    proxyDispatcher = new ProxyAgent(url);
+  }
+  return proxyDispatcher;
+}
+
 function secretKey(): string {
   const key = process.env.FLW_SECRET_KEY;
   if (!key) throw new Error('FLW_SECRET_KEY is not set');
@@ -54,12 +82,16 @@ async function call<T>(
   // for any endpoint that honours it.
   if (init.idempotencyKey) headers['X-Idempotency-Key'] = init.idempotencyKey;
 
+  const agent = await dispatcher();
+
   let res: Response;
   try {
     res = await fetch(`${BASE}${path}`, {
       method: init.method,
       headers,
       body: init.body ? JSON.stringify(init.body) : undefined,
+      // Routes this call out through the static-IP proxy when configured.
+      ...(agent ? { dispatcher: agent } : {}),
       // A transfer that times out has NOT necessarily failed. Keep this
       // generous, and treat a timeout as "unknown", never as "failed".
       signal: AbortSignal.timeout(30_000),

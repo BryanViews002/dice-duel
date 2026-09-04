@@ -26,3 +26,6 @@ Thumbs.db
 .opp-token
 supabase/.temp/
 supabase/.branches/
+
+.vercel
+.env*
